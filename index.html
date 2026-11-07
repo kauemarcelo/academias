@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Multi-Academia</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-main: #0b0f19;
+      --bg-card: #151c2c;
+      --bg-card-hover: #1e293b;
+      --accent-green: #22c55e;
+      --accent-blue: #3b82f6;
+      --accent-red: #ef4444;
+      --accent-red-hover: #dc2626;
+      
+      /* Cores Dinâmicas da Academia */
+      --brand-primary: #22c55e;
+      --brand-primary-hover: #16a34a;
+      --brand-glow: rgba(34, 197, 94, 0.15);
+
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #273549;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: #050811;
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--brand-primary);
+      transition: color 0.3s;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      width: 100%;
+      flex: 1;
+    }
+
+    .screen {
+      display: none;
+    }
+    .screen.active {
+      display: block;
+    }
+
+    .page-title-center {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .page-title-center p {
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      max-width: 400px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      font-size: 0.95rem;
+    }
+
+    .search-box input:focus {
+      border-color: var(--brand-primary);
+      outline: none;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .btn {
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--brand-primary);
+      color: #000;
+    }
+    .btn-primary:hover {
+      background-color: var(--brand-primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-card-hover);
+      color: var(--text-main);
+    }
+    .btn-secondary:hover {
+      background-color: #334155;
+    }
+
+    .btn-danger {
+      background-color: var(--accent-red);
+      color: #fff;
+    }
+    .btn-danger:hover {
+      background-color: var(--accent-red-hover);
+    }
+
+    /* CARDS DA ACADEMIA */
+    .gyms-grid, .students-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .gym-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .gym-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--brand-primary);
+    }
+
+    .gym-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: var(--brand-glow);
+      color: var(--brand-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .gym-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .gym-location {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .gym-footer {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: var(--brand-primary);
+      font-weight: 600;
+    }
+
+    /* CARDS DO ALUNO */
+    .student-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .student-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--brand-primary);
+    }
+
+    .student-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .student-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .student-goal {
+      font-size: 0.85rem;
+      color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.1);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      width: fit-content;
+      margin-top: 0.25rem;
+    }
+
+    .student-footer {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+      grid-column: 1 / -1;
+    }
+
+    /* TELA 3: FICHA DE TREINO */
+    .workout-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .workout-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background-color: var(--brand-primary);
+      color: #000;
+    }
+
+    .exercise-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .exercise-item {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .exercise-info {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .exercise-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .exercise-notes {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .exercise-details {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .detail-tag {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg-main);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      min-width: 70px;
+    }
+
+    .detail-tag .label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .detail-tag .val {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--brand-primary);
+    }
+
+    .exercise-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 0.4rem;
+      border-radius: 4px;
+      transition: color 0.2s;
+    }
+
+    .icon-btn:hover {
+      color: var(--text-main);
+    }
+
+    .icon-btn.delete:hover {
+      color: var(--accent-red);
+    }
+
+    /* MODAIS */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-size: 0.95rem;
+    }
+
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--brand-primary);
+      outline: none;
+    }
+
+    .cep-box {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .breadcrumb {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .breadcrumb span.active {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <i class="fa-solid fa-dumbbell"></i> Academias
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- TELA 1: LISTA DE ACADEMIAS -->
+    <div id="screen-gyms" class="screen active">
+      <div class="page-title-center">
+        <p>Selecione a unidade para visualizar os alunos</p>
+      </div>
+
+      <div class="controls-bar" style="justify-content: flex-end;">
+        <button class="btn btn-primary" onclick="openGymModal()">
+          <i class="fa-solid fa-plus"></i> Nova Academia
+        </button>
+      </div>
+
+      <div class="gyms-grid" id="gyms-container"></div>
+    </div>
+
+    <!-- TELA 2: LISTA DE ALUNOS DA ACADEMIA -->
+    <div id="screen-students" class="screen">
+      <div class="breadcrumb">
+        <span style="cursor: pointer;" onclick="showGymsScreen()">Academias</span> 
+        <i class="fa-solid fa-chevron-right" style="font-size: 0.7rem;"></i> 
+        <span class="active" id="current-gym-name-breadcrumb">Power Fitness</span>
+      </div>
+
+      <div class="page-title-center">
+        <h2 id="current-gym-title">Power Fitness</h2>
+      </div>
+
+      <div class="controls-bar">
+        <button class="btn btn-secondary" onclick="showGymsScreen()">
+          <i class="fa-solid fa-arrow-left"></i> Voltar
+        </button>
+
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="search-student" placeholder="Buscar aluno por nome..." oninput="filterStudents()">
+        </div>
+
+        <div>
+          <button class="btn btn-danger" onclick="deleteCurrentGym()" style="margin-right: 0.5rem;">
+            <i class="fa-solid fa-trash"></i> Excluir Academia
+          </button>
+          <button class="btn btn-primary" onclick="openStudentModal()">
+            <i class="fa-solid fa-plus"></i> Novo Aluno
+          </button>
+        </div>
+      </div>
+
+      <div class="students-grid" id="students-container"></div>
+    </div>
+
+    <!-- TELA 3: FICHA DE TREINO DO ALUNO -->
+    <div id="screen-workout" class="screen">
+      <div class="breadcrumb">
+        <span style="cursor: pointer;" onclick="showGymsScreen()">Academias</span> 
+        <i class="fa-solid fa-chevron-right" style="font-size: 0.7rem;"></i> 
+        <span style="cursor: pointer;" onclick="showStudentsScreen()" id="current-gym-name-breadcrumb-2">Power Fitness</span>
+        <i class="fa-solid fa-chevron-right" style="font-size: 0.7rem;"></i> 
+        <span class="active" id="current-student-name-breadcrumb">Nome do Aluno</span>
+      </div>
+
+      <div class="page-title-center">
+        <h2 id="current-student-name">Nome do Aluno</h2>
+        <span id="current-student-goal" class="student-goal" style="display:inline-block; margin-top:0.25rem;">Objetivo</span>
+      </div>
+
+      <div class="controls-bar" style="margin-bottom: 1rem;">
+        <button class="btn btn-secondary" onclick="showStudentsScreen()">
+          <i class="fa-solid fa-arrow-left"></i> Voltar para Alunos
+        </button>
+
+        <div class="workout-tabs" id="workout-tabs" style="margin-bottom: 0;">
+          <button class="tab-btn active" onclick="switchTab('A')">Treino A</button>
+          <button class="tab-btn" onclick="switchTab('B')">Treino B</button>
+          <button class="tab-btn" onclick="switchTab('C')">Treino C</button>
+        </div>
+
+        <div>
+          <button class="btn btn-danger" onclick="deleteCurrentStudent()" style="margin-right: 0.5rem;">
+            <i class="fa-solid fa-trash"></i> Excluir Aluno
+          </button>
+          <button class="btn btn-primary" onclick="openExerciseModal()">
+            <i class="fa-solid fa-plus"></i> Adicionar Exercício
+          </button>
+        </div>
+      </div>
+
+      <div class="exercise-list" id="exercise-container"></div>
+    </div>
+
+  </div>
+
+  <!-- MODAL: CADASTRAR ACADEMIA -->
+  <div class="modal-overlay" id="gym-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Nova Academia</h3>
+        <button class="icon-btn" onclick="closeGymModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="gym-form" onsubmit="saveGym(event)">
+        
+        <div class="form-group">
+          <label>Buscar por CEP ou Bairro (Ex: 05033-000 / Guaicurus / Água Branca)</label>
+          <div class="cep-box">
+            <input type="text" id="gym-cep-search" placeholder="Digite o CEP ou bairro...">
+            <button type="button" class="btn btn-secondary" onclick="searchGymsByCep()"><i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Selecione a Academia</label>
+          <select id="gym-preset" onchange="handleGymPresetChange(this)" required>
+            <option value="">-- Escolha da lista próxima --</option>
+            <option value="Power Fitness|Jardim Santo Elias">Power Fitness (Jardim Santo Elias)</option>
+            <option value="CLV FITNESS|Jardim Santo Elias">CLV FITNESS (Jardim Santo Elias)</option>
+            <option value="VIVA MAIS ACADEMIA PARA MULHERES|Jardim Santo Elias">VIVA MAIS ACADEMIA PARA MULHERES</option>
+            <option value="Academia Fit Club|Vila Mangalot">Academia Fit Club (Vila Mangalot)</option>
+            <option value="Academia Gaviões 24h - Pirituba|Pirituba">Academia Gaviões 24h - Pirituba</option>
+            <option value="custom">Outra (Digitar manualmente)</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="custom-gym-group" style="display: none;">
+          <label>Nome da Academia</label>
+          <input type="text" id="gym-name-input" placeholder="Ex: Nome da Academia">
+        </div>
+
+        <div class="form-group">
+          <label>Unidade / Local</label>
+          <input type="text" id="gym-location-input" placeholder="Ex: Pirituba">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeGymModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Academia</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CADASTRAR ALUNO -->
+  <div class="modal-overlay" id="student-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Novo Aluno</h3>
+        <button class="icon-btn" onclick="closeStudentModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="student-form" onsubmit="saveStudent(event)">
+        <div class="form-group">
+          <label>Nome Completo</label>
+          <input type="text" id="student-name-input" required>
+        </div>
+        <div class="form-group">
+          <label>Objetivo</label>
+          <select id="student-goal-input">
+            <option value="Hipertrofia">Hipertrofia</option>
+            <option value="Emagrecimento">Emagrecimento</option>
+            <option value="Condicionamento">Condicionamento Físico</option>
+            <option value="Reabilitação">Reabilitação</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeStudentModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Aluno</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CADASTRAR/EDITAR EXERCÍCIO -->
+  <div class="modal-overlay" id="exercise-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="exercise-modal-title">Novo Exercício</h3>
+        <button class="icon-btn" onclick="closeExerciseModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="exercise-form" onsubmit="saveExercise(event)">
+        <input type="hidden" id="exercise-id">
+        
+        <div class="form-group">
+          <label>Exercício</label>
+          <select id="ex-preset" onchange="handlePresetChange(this)">
+            <option value="">-- Escolha da lista --</option>
+            <optgroup label="Peitoral">
+              <option value="Supino Reto com Barra">Supino Reto com Barra</option>
+              <option value="Supino Inclinado com Halteres">Supino Inclinado com Halteres</option>
+              <option value="Crucifixo Reto">Crucifixo Reto</option>
+              <option value="Crossover Cabo">Crossover Cabo</option>
+              <option value="Flexão de Braço">Flexão de Braço</option>
+            </optgroup>
+            <optgroup label="Costas / Dorsal">
+              <option value="Puxada Frontal">Puxada Frontal</option>
+              <option value="Remada Curvada com Barra">Remada Curvada com Barra</option>
+              <option value="Remada Baixa no Cabo">Remada Baixa no Cabo</option>
+              <option value="Pulldown">Pulldown</option>
+              <option value="Levantamento Terra">Levantamento Terra</option>
+            </optgroup>
+            <optgroup label="Pernas / Membros Inferiores">
+              <option value="Agachamento Livre">Agachamento Livre</option>
+              <option value="Leg Press 45°">Leg Press 45°</option>
+              <option value="Cadeira Extensora">Cadeira Extensora</option>
+              <option value="Mesa Flexora">Mesa Flexora</option>
+              <option value="Stiff com Halteres">Stiff com Halteres</option>
+              <option value="Elevação Pélvica">Elevação Pélvica</option>
+              <option value="Gêmeos em Pé (Panturrilha)">Gêmeos em Pé (Panturrilha)</option>
+            </optgroup>
+            <optgroup label="Ombros">
+              <option value="Desenvolvimento com Halteres">Desenvolvimento com Halteres</option>
+              <option value="Elevação Lateral">Elevação Lateral</option>
+              <option value="Elevação Frontal">Elevação Frontal</option>
+              <option value="Crucifixo Invertido">Crucifixo Invertido</option>
+            </optgroup>
+            <optgroup label="Bíceps & Tríceps">
+              <option value="Rosca Direta com Barra">Rosca Direta com Barra</option>
+              <option value="Rosca Alternada com Halteres">Rosca Alternada com Halteres</option>
+              <option value="Rosca Martelo">Rosca Martelo</option>
+              <option value="Tríceps Testa">Tríceps Testa</option>
+              <option value="Tríceps Pulley (Corda)">Tríceps Pulley (Corda)</option>
+              <option value="Tríceps Coice">Tríceps Coice</option>
+            </optgroup>
+            <optgroup label="Core / Abdômen">
+              <option value="Abdominal Supra">Abdominal Supra</option>
+              <option value="Prancha Abdominal">Prancha Abdominal</option>
+              <option value="Abdominal Infra no Banco">Abdominal Infra no Banco</option>
+            </optgroup>
+            <option value="custom">Outro (Digitar manualmente)</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="custom-name-group" style="display: none;">
+          <label>Nome do Exercício Personalizado</label>
+          <input type="text" id="ex-name" placeholder="Ex: Supino Reto">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Séries</label>
+            <select id="ex-sets">
+              <option value="1">1 série</option>
+              <option value="2">2 séries</option>
+              <option value="3">3 séries</option>
+              <option value="4" selected>4 séries</option>
+              <option value="5">5 séries</option>
+              <option value="6">6 séries</option>
+              <option value="7">7 séries</option>
+              <option value="8">8 séries</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Repetições</label>
+            <select id="ex-reps-select" onchange="handleRepsChange(this)">
+              <option value="6 a 8">6 a 8</option>
+              <option value="8 a 10">8 a 10</option>
+              <option value="10 a 12" selected>10 a 12</option>
+              <option value="12 a 15">12 a 15</option>
+              <option value="15 a 20">15 a 20</option>
+              <option value="Até a falha">Até a falha</option>
+              <option value="custom">Outro (Digitar)</option>
+            </select>
+            <input type="text" id="ex-reps-custom" placeholder="Ex: 8/6/4" style="display: none; margin-top: 0.5rem;">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Carga (kg)</label>
+            <select id="ex-weight-select" onchange="handleWeightChange(this)">
+              <option value="0">Sem Carga (Peso corporal)</option>
+              <option value="5">5 kg</option>
+              <option value="10">10 kg</option>
+              <option value="12">12 kg</option>
+              <option value="14">14 kg</option>
+              <option value="16">16 kg</option>
+              <option value="18">18 kg</option>
+              <option value="20">20 kg</option>
+              <option value="25">25 kg</option>
+              <option value="30">30 kg</option>
+              <option value="35">35 kg</option>
+              <option value="40">40 kg</option>
+              <option value="50">50 kg</option>
+              <option value="60">60 kg</option>
+              <option value="70">70 kg</option>
+              <option value="80">80 kg</option>
+              <option value="100">100 kg</option>
+              <option value="custom">Outro valor</option>
+            </select>
+            <input type="text" id="ex-weight-custom" placeholder="Carga ex: 22.5" style="display: none; margin-top: 0.5rem;">
+          </div>
+
+          <div class="form-group">
+            <label>Descanso (s)</label>
+            <select id="ex-rest">
+              <option value="30s">30s</option>
+              <option value="45s">45s</option>
+              <option value="60s" selected>60s (1 min)</option>
+              <option value="90s">90s (1.5 min)</option>
+              <option value="120s">120s (2 min)</option>
+              <option value="180s">180s (3 min)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Observações / Instruções</label>
+          <textarea id="ex-notes" rows="2" placeholder="Ex: Foco na fase excêntrica"></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeExerciseModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Exercício</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let gyms = [];
+    let selectedGymId = null;
+    let selectedStudentId = null;
+    let activeTab = 'A';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadData();
+      renderGyms();
+    });
+
+    function loadData() {
+      const savedData = localStorage.getItem('gymfit_gyms');
+      if (savedData) {
+        gyms = JSON.parse(savedData);
+      } else {
+        gyms = [
+          {
+            id: 1,
+            name: "Power Fitness",
+            location: "Jardim Santo Elias",
+            students: []
+          },
+          {
+            id: 2,
+            name: "CLV FITNESS",
+            location: "Jardim Santo Elias",
+            students: []
+          }
+        ];
+        saveData();
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem('gymfit_gyms', JSON.stringify(gyms));
+    }
+
+    function applyGymTheme(gymName) {
+      const root = document.documentElement;
+      const upper = gymName.toUpperCase();
+
+      if (upper.includes("POWER FITNESS")) {
+        // Verde Neon & Preto
+        root.style.setProperty('--brand-primary', '#22c55e');
+        root.style.setProperty('--brand-primary-hover', '#16a34a');
+        root.style.setProperty('--brand-glow', 'rgba(34, 197, 94, 0.15)');
+      } else if (upper.includes("CLV FITNESS") || upper.includes("CLV")) {
+        // Vermelho & Preto
+        root.style.setProperty('--brand-primary', '#ef4444');
+        root.style.setProperty('--brand-primary-hover', '#dc2626');
+        root.style.setProperty('--brand-glow', 'rgba(239, 68, 68, 0.15)');
+      } else if (upper.includes("VIVA MAIS")) {
+        // Rosa Neon & Preto
+        root.style.setProperty('--brand-primary', '#ec4899');
+        root.style.setProperty('--brand-primary-hover', '#db2777');
+        root.style.setProperty('--brand-glow', 'rgba(236, 72, 153, 0.15)');
+      } else {
+        // Tema escuro padrão
+        root.style.setProperty('--brand-primary', '#a855f7');
+        root.style.setProperty('--brand-primary-hover', '#9333ea');
+        root.style.setProperty('--brand-glow', 'rgba(168, 85, 247, 0.15)');
+      }
+    }
+
+    // TELA 1: ACADEMIAS
+    function renderGyms() {
+      const container = document.getElementById('gyms-container');
+      container.innerHTML = '';
+
+      if (gyms.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-building-circle-xmark" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+            <p>Nenhuma academia cadastrada.</p>
+            <p style="font-size: 0.85rem; margin-top: 0.5rem;">Clique em "+ Nova Academia" para começar.</p>
+          </div>
+        `;
+        return;
+      }
+
+      gyms.forEach(gym => {
+        const totalStudents = gym.students.length;
+        const card = document.createElement('div');
+        card.className = 'gym-card';
+        card.onclick = () => openGymStudents(gym.id);
+
+        card.innerHTML = `
+          <div>
+            <div class="gym-icon">
+              <i class="fa-solid fa-building"></i>
+            </div>
+            <div class="gym-name">${gym.name}</div>
+            <div class="gym-location">${gym.location || 'Sem localização'}</div>
+          </div>
+          <div class="gym-footer">
+            <span><i class="fa-solid fa-users"></i> ${totalStudents} Alunos</span>
+            <i class="fa-solid fa-chevron-right"></i>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function showGymsScreen() {
+      selectedGymId = null;
+      selectedStudentId = null;
+      applyGymTheme('');
+      document.getElementById('screen-students').classList.remove('active');
+      document.getElementById('screen-workout').classList.remove('active');
+      document.getElementById('screen-gyms').classList.add('active');
+      renderGyms();
+    }
+
+    function openGymModal() {
+      document.getElementById('gym-modal').classList.add('active');
+    }
+
+    function closeGymModal() {
+      document.getElementById('gym-modal').classList.remove('active');
+      document.getElementById('gym-form').reset();
+      document.getElementById('custom-gym-group').style.display = 'none';
+    }
+
+    // BUSCA DE ACADEMIAS
+    function searchGymsByCep() {
+      const queryInput = document.getElementById('gym-cep-search').value.trim();
+      const select = document.getElementById('gym-preset');
+
+      if (!queryInput) {
+        alert("Por favor, digite um CEP ou nome de bairro.");
+        return;
+      }
+
+      const query = queryInput.toLowerCase();
+      let results = [];
+
+      if (query.includes("pirituba") || query.includes("santo elias") || query.includes("mangalot") || query.includes("05136")) {
+        results = [
+          { name: 'Power Fitness', location: 'Jardim Santo Elias' },
+          { name: 'CLV FITNESS', location: 'Jardim Santo Elias' },
+          { name: 'VIVA MAIS ACADEMIA PARA MULHERES', location: 'Jardim Santo Elias' },
+          { name: 'Academia Fit Club', location: 'Vila Mangalot' },
+          { name: 'Academia Gaviões 24h - Pirituba', location: 'Pirituba' }
+        ];
+      } else if (query.includes("agua branca") || query.includes("água branca") || query.includes("guaicurus") || query.includes("05033") || query.includes("05036")) {
+        results = [
+          { name: 'OXIGENIO', location: 'R. Guaicurus, 397 - Água Branca' },
+          { name: 'Bio Ritmo - West Plaza', location: 'Água Branca' },
+          { name: 'Smart Fit - Bourbon Shopping', location: 'Água Branca' },
+          { name: 'Academia Bluefit - Água Branca', location: 'Água Branca' }
+        ];
+      } else if (query.includes("lapa")) {
+        results = [
+          { name: 'Smart Fit - Lapa', location: 'Lapa' },
+          { name: 'Bio Ritmo - Lapa', location: 'Lapa' },
+          { name: 'Bluefit - Lapa', location: 'Lapa' },
+          { name: 'Academia Gaviões 24h - Lapa', location: 'Lapa' }
+        ];
+      } else {
+        const capitalized = queryInput.charAt(0).toUpperCase() + queryInput.slice(1);
+        results = [
+          { name: `Smart Fit - ${capitalized}`, location: capitalized },
+          { name: `Bluefit - ${capitalized}`, location: capitalized },
+          { name: `Bio Ritmo - ${capitalized}`, location: capitalized },
+          { name: `Academia Gaviões - ${capitalized}`, location: capitalized }
+        ];
+      }
+
+      select.innerHTML = '<option value="">-- Escolha da lista encontrada --</option>';
+      results.forEach(g => {
+        const option = document.createElement('option');
+        option.value = `${g.name}|${g.location}`;
+        option.textContent = `${g.name} (${g.location})`;
+        select.appendChild(option);
+      });
+
+      const customOpt = document.createElement('option');
+      customOpt.value = 'custom';
+      customOpt.textContent = 'Outra (Digitar manualmente)';
+      select.appendChild(customOpt);
+
+      select.selectedIndex = 1;
+      handleGymPresetChange(select);
+    }
+
+    function handleGymPresetChange(selectElement) {
+      const val = selectElement.value;
+      const customGroup = document.getElementById('custom-gym-group');
+      const nameInput = document.getElementById('gym-name-input');
+      const locationInput = document.getElementById('gym-location-input');
+
+      if (val === 'custom') {
+        customGroup.style.display = 'block';
+        nameInput.required = true;
+        nameInput.value = '';
+        nameInput.focus();
+        locationInput.value = '';
+      } else if (val) {
+        customGroup.style.display = 'none';
+        nameInput.required = false;
+        const parts = val.split('|');
+        nameInput.value = parts[0];
+        locationInput.value = parts[1];
+      } else {
+        customGroup.style.display = 'none';
+        nameInput.value = '';
+        locationInput.value = '';
+      }
+    }
+
+    function saveGym(e) {
+      e.preventDefault();
+      const name = document.getElementById('gym-name-input').value;
+      const location = document.getElementById('gym-location-input').value;
+
+      if (!name) {
+        alert("Por favor, selecione ou digite o nome da academia.");
+        return;
+      }
+
+      const newGym = {
+        id: Date.now(),
+        name,
+        location,
+        students: []
+      };
+
+      gyms.push(newGym);
+      saveData();
+      renderGyms();
+      closeGymModal();
+    }
+
+    function deleteCurrentGym() {
+      if (confirm("Tem certeza que deseja excluir esta academia e todos os seus alunos?")) {
+        gyms = gyms.filter(g => g.id !== selectedGymId);
+        saveData();
+        showGymsScreen();
+      }
+    }
+
+    // TELA 2: ALUNOS DA ACADEMIA
+    function openGymStudents(gymId) {
+      selectedGymId = gymId;
+      const gym = gyms.find(g => g.id === gymId);
+
+      applyGymTheme(gym.name);
+
+      document.getElementById('current-gym-title').textContent = gym.name;
+      document.getElementById('current-gym-name-breadcrumb').textContent = gym.name;
+      document.getElementById('current-gym-name-breadcrumb-2').textContent = gym.name;
+
+      document.getElementById('screen-gyms').classList.remove('active');
+      document.getElementById('screen-workout').classList.remove('active');
+      document.getElementById('screen-students').classList.add('active');
+
+      renderStudents();
+    }
+
+    function showStudentsScreen() {
+      selectedStudentId = null;
+      document.getElementById('screen-workout').classList.remove('active');
+      document.getElementById('screen-students').classList.add('active');
+      renderStudents();
+    }
+
+    function renderStudents(filterText = '') {
+      const container = document.getElementById('students-container');
+      container.innerHTML = '';
+
+      const gym = gyms.find(g => g.id === selectedGymId);
+      if (!gym) return;
+
+      const filtered = gym.students.filter(s => s.name.toLowerCase().includes(filterText.toLowerCase()));
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-users-slash" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+            <p>Nenhum aluno cadastrado nesta academia.</p>
+            <p style="font-size: 0.85rem; margin-top: 0.5rem;">Clique em "+ Novo Aluno" para começar.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(student => {
+        const totalExercises = (student.workouts.A?.length || 0) + 
+                               (student.workouts.B?.length || 0) + 
+                               (student.workouts.C?.length || 0);
+
+        const card = document.createElement('div');
+        card.className = 'student-card';
+        card.onclick = () => openStudentWorkout(student.id);
+
+        card.innerHTML = `
+          <div class="student-header">
+            <div>
+              <div class="student-name">${student.name}</div>
+              <div class="student-goal">${student.goal}</div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color: var(--text-muted)"></i>
+          </div>
+          <div class="student-footer">
+            <span><i class="fa-solid fa-list-check"></i> ${totalExercises} Exercícios</span>
+            <span>Ativo</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function filterStudents() {
+      const query = document.getElementById('search-student').value;
+      renderStudents(query);
+    }
+
+    function openStudentModal() {
+      document.getElementById('student-modal').classList.add('active');
+    }
+
+    function closeStudentModal() {
+      document.getElementById('student-modal').classList.remove('active');
+      document.getElementById('student-form').reset();
+    }
+
+    function saveStudent(e) {
+      e.preventDefault();
+      const gym = gyms.find(g => g.id === selectedGymId);
+      const name = document.getElementById('student-name-input').value;
+      const goal = document.getElementById('student-goal-input').value;
+
+      const newStudent = {
+        id: Date.now(),
+        name,
+        goal,
+        workouts: { A: [], B: [], C: [] }
+      };
+
+      gym.students.push(newStudent);
+      saveData();
+      renderStudents();
+      closeStudentModal();
+    }
+
+    function deleteCurrentStudent() {
+      if (confirm("Tem certeza que deseja excluir este aluno e todas as suas fichas?")) {
+        const gym = gyms.find(g => g.id === selectedGymId);
+        gym.students = gym.students.filter(s => s.id !== selectedStudentId);
+        saveData();
+        showStudentsScreen();
+      }
+    }
+
+    // TELA 3: FICHA DE TREINO
+    function openStudentWorkout(studentId) {
+      selectedStudentId = studentId;
+      const gym = gyms.find(g => g.id === selectedGymId);
+      const student = gym.students.find(s => s.id === studentId);
+
+      document.getElementById('current-student-name').textContent = student.name;
+      document.getElementById('current-student-name-breadcrumb').textContent = student.name;
+      document.getElementById('current-student-goal').textContent = student.goal;
+
+      document.getElementById('screen-students').classList.remove('active');
+      document.getElementById('screen-workout').classList.add('active');
+
+      activeTab = 'A';
+      updateTabStyles();
+      renderExercises();
+    }
+
+    function switchTab(tab) {
+      activeTab = tab;
+      updateTabStyles();
+      renderExercises();
+    }
+
+    function updateTabStyles() {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.endsWith(activeTab));
+      });
+    }
+
+    function renderExercises() {
+      const container = document.getElementById('exercise-container');
+      container.innerHTML = '';
+
+      const gym = gyms.find(g => g.id === selectedGymId);
+      const student = gym.students.find(s => s.id === selectedStudentId);
+      const exercises = student.workouts[activeTab] || [];
+
+      if (exercises.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <p>Nenhum exercício cadastrado no Treino ${activeTab}.</p>
+          </div>
+        `;
+        return;
+      }
+
+      exercises.forEach(ex => {
+        const item = document.createElement('div');
+        item.className = 'exercise-item';
+
+        item.innerHTML = `
+          <div class="exercise-info">
+            <div class="exercise-title">${ex.name}</div>
+            <div class="exercise-notes">${ex.notes || 'Sem observações'}</div>
+          </div>
+          <div class="exercise-details">
+            <div class="detail-tag">
+              <span class="label">Séries</span>
+              <span class="val">${ex.sets}</span>
+            </div>
+            <div class="detail-tag">
+              <span class="label">Reps</span>
+              <span class="val">${ex.reps}</span>
+            </div>
+            <div class="detail-tag">
+              <span class="label">Carga</span>
+              <span class="val">${ex.weight ? ex.weight + ' kg' : '-'}</span>
+            </div>
+            <div class="detail-tag">
+              <span class="label">Descanso</span>
+              <span class="val">${ex.rest || '-'}</span>
+            </div>
+          </div>
+          <div class="exercise-actions">
+            <button class="icon-btn" onclick="editExercise(${ex.id})" title="Editar"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button class="icon-btn delete" onclick="deleteExercise(${ex.id})" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // CRUD EXERCÍCIOS
+    function handlePresetChange(selectElement) {
+      const selectedValue = selectElement.value;
+      const customGroup = document.getElementById('custom-name-group');
+      const nameInput = document.getElementById('ex-name');
+      
+      if (selectedValue === 'custom') {
+        customGroup.style.display = 'block';
+        nameInput.required = true;
+        nameInput.value = '';
+        nameInput.focus();
+      } else {
+        customGroup.style.display = 'none';
+        nameInput.required = false;
+        nameInput.value = selectedValue;
+      }
+    }
+
+    function handleRepsChange(selectElement) {
+      const customInput = document.getElementById('ex-reps-custom');
+      if (selectElement.value === 'custom') {
+        customInput.style.display = 'block';
+        customInput.focus();
+      } else {
+        customInput.style.display = 'none';
+      }
+    }
+
+    function handleWeightChange(selectElement) {
+      const customInput = document.getElementById('ex-weight-custom');
+      if (selectElement.value === 'custom') {
+        customInput.style.display = 'block';
+        customInput.focus();
+      } else {
+        customInput.style.display = 'none';
+      }
+    }
+
+    function openExerciseModal(isEdit = false) {
+      document.getElementById('exercise-modal-title').textContent = isEdit ? 'Editar Exercício' : 'Novo Exercício';
+      document.getElementById('exercise-modal').classList.add('active');
+    }
+
+    function closeExerciseModal() {
+      document.getElementById('exercise-modal').classList.remove('active');
+      document.getElementById('exercise-form').reset();
+      document.getElementById('exercise-id').value = '';
+      document.getElementById('custom-name-group').style.display = 'none';
+      document.getElementById('ex-reps-custom').style.display = 'none';
+      document.getElementById('ex-weight-custom').style.display = 'none';
+    }
+
+    function saveExercise(e) {
+      e.preventDefault();
+      const gym = gyms.find(g => g.id === selectedGymId);
+      const student = gym.students.find(s => s.id === selectedStudentId);
+      const exId = document.getElementById('exercise-id').value;
+
+      const presetVal = document.getElementById('ex-preset').value;
+      const exName = presetVal === 'custom' ? document.getElementById('ex-name').value : presetVal;
+
+      if (!exName) {
+        alert("Por favor, selecione ou digite o nome do exercício.");
+        return;
+      }
+
+      const repsSelect = document.getElementById('ex-reps-select').value;
+      const exReps = repsSelect === 'custom' ? document.getElementById('ex-reps-custom').value : repsSelect;
+
+      const weightSelect = document.getElementById('ex-weight-select').value;
+      const exWeight = weightSelect === 'custom' ? document.getElementById('ex-weight-custom').value : weightSelect;
+
+      const exerciseData = {
+        id: exId ? Number(exId) : Date.now(),
+        name: exName,
+        sets: document.getElementById('ex-sets').value,
+        reps: exReps,
+        weight: exWeight,
+        rest: document.getElementById('ex-rest').value,
+        notes: document.getElementById('ex-notes').value
+      };
+
+      if (exId) {
+        const index = student.workouts[activeTab].findIndex(e => e.id === Number(exId));
+        student.workouts[activeTab][index] = exerciseData;
+      } else {
+        student.workouts[activeTab].push(exerciseData);
+      }
+
+      saveData();
+      renderExercises();
+      closeExerciseModal();
+    }
+
+    function editExercise(exId) {
+      const gym = gyms.find(g => g.id === selectedGymId);
+      const student = gym.students.find(s => s.id === selectedStudentId);
+      const ex = student.workouts[activeTab].find(e => e.id === exId);
+
+      document.getElementById('exercise-id').value = ex.id;
+      
+      const presetSelect = document.getElementById('ex-preset');
+      const optionExists = Array.from(presetSelect.options).some(opt => opt.value === ex.name);
+      if (optionExists) {
+        presetSelect.value = ex.name;
+        document.getElementById('custom-name-group').style.display = 'none';
+      } else {
+        presetSelect.value = 'custom';
+        document.getElementById('custom-name-group').style.display = 'block';
+        document.getElementById('ex-name').value = ex.name;
+      }
+
+      document.getElementById('ex-sets').value = ex.sets;
+
+      const repsSelect = document.getElementById('ex-reps-select');
+      const repsOptionExists = Array.from(repsSelect.options).some(opt => opt.value === ex.reps);
+      if (repsOptionExists) {
+        repsSelect.value = ex.reps;
+        document.getElementById('ex-reps-custom').style.display = 'none';
+      } else {
+        repsSelect.value = 'custom';
+        document.getElementById('ex-reps-custom').style.display = 'block';
+        document.getElementById('ex-reps-custom').value = ex.reps;
+      }
+
+      const weightSelect = document.getElementById('ex-weight-select');
+      const weightOptionExists = Array.from(weightSelect.options).some(opt => opt.value === ex.weight);
+      if (weightOptionExists) {
+        weightSelect.value = ex.weight;
+        document.getElementById('ex-weight-custom').style.display = 'none';
+      } else {
+        weightSelect.value = 'custom';
+        document.getElementById('ex-weight-custom').style.display = 'block';
+        document.getElementById('ex-weight-custom').value = ex.weight || '';
+      }
+
+      document.getElementById('ex-rest').value = ex.rest || '60s';
+      document.getElementById('ex-notes').value = ex.notes || '';
+
+      openExerciseModal(true);
+    }
+
+    function deleteExercise(exId) {
+      if (confirm("Remover este exercício?")) {
+        const gym = gyms.find(g => g.id === selectedGymId);
+        const student = gym.students.find(s => s.id === selectedStudentId);
+        student.workouts[activeTab] = student.workouts[activeTab].filter(e => e.id !== exId);
+        saveData();
+        renderExercises();
+      }
+    }
+  </script>
+</body>
+</html>
